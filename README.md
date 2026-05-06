@@ -1,1 +1,0 @@
-# Analisis_Financiero_INSOLTEC
