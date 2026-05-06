@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis Financiero CFO - INSOLTEC 2023-2025</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --text: #1a1a2e;
+  --muted: #6c757d;
+  --accent: #2f5496;
+  --green: #1d9e75;
+  --red: #e24b4a;
+  --amber: #ba7517;
+  --purple: #534ab7;
+  --coral: #d85a30;
+  --border: #e9ecef;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.header { background: linear-gradient(135deg, #1a1a2e 0%, #2f5496 100%); color: white; padding: 3rem 2rem; text-align: center; }
+.header h1 { font-size: 2rem; font-weight: 600; margin-bottom: 0.5rem; }
+.header p { opacity: 0.85; font-size: 1rem; }
+.container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+.section-title { font-size: 1.3rem; font-weight: 600; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); color: var(--accent); }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.kpi-card { background: var(--card); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); border-left: 4px solid var(--accent); }
+.kpi-card.green { border-left-color: var(--green); }
+.kpi-card.red { border-left-color: var(--red); }
+.kpi-card.amber { border-left-color: var(--amber); }
+.kpi-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 4px; }
+.kpi-value { font-size: 1.8rem; font-weight: 700; }
+.kpi-change { font-size: 0.85rem; margin-top: 4px; }
+.kpi-change.up { color: var(--green); }
+.kpi-change.down { color: var(--red); }
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+.chart-card { background: var(--card); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); }
+.chart-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); }
+.chart-wrap { position: relative; height: 280px; }
+.full-width { grid-column: 1 / -1; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th { background: var(--accent); color: white; padding: 10px 12px; text-align: left; font-weight: 500; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+tr:hover td { background: #f0f4ff; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+.badge-alta { background: #fde8e8; color: var(--red); }
+.badge-media { background: #fff3e0; color: var(--amber); }
+.badge-positivo { background: #e8f5e9; color: var(--green); }
+.ratio-table { margin-bottom: 1.5rem; }
+.ratio-table td:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; }
+.trend-up { color: var(--green); font-weight: 600; }
+.trend-down { color: var(--red); font-weight: 600; }
+.footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+@media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: 1fr 1fr; } }
+.nav { background: var(--card); border-bottom: 1px solid var(--border); padding: 0.75rem 2rem; position: sticky; top: 0; z-index: 100; display: flex; gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.nav a { color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; padding: 4px 0; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.eerr-highlight { font-weight: 700; background: #f0f4ff; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Análisis Financiero CFO</h1>
+  <p>INSOLTEC — Soluciones de Tecnología y Comunicaciones SpA | RUT: 76.328.123-K</p>
+  <p style="opacity:0.7; font-size: 0.85rem; margin-top: 0.5rem;">Período: Diciembre 2023 – Diciembre 2025 | Generado: Mayo 2026</p>
+</div>
+
+<nav class="nav">
+  <a href="#kpis">KPIs</a>
+  <a href="#rentabilidad">Rentabilidad</a>
+  <a href="#eerr">Estado de Resultados</a>
+  <a href="#endeudamiento">Endeudamiento</a>
+  <a href="#liquidez">Liquidez</a>
+  <a href="#eficiencia">Eficiencia</a>
+  <a href="#deuda">Estructura Deuda</a>
+  <a href="#alertas">Alertas CFO</a>
+</nav>
+
+<div class="container">
+
+<!-- KPIs -->
+<div id="kpis"></div>
+<h2 class="section-title">Indicadores clave</h2>
+<div class="kpi-grid">
+  <div class="kpi-card green">
+    <div class="kpi-label">Ventas 2025</div>
+    <div class="kpi-value">$2.856M</div>
+    <div class="kpi-change up">▲ +9.1% vs 2024 | CAGR 9.0%</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Resultado neto 2025</div>
+    <div class="kpi-value">$106M</div>
+    <div class="kpi-change up">▲ +88% vs 2024</div>
+  </div>
+  <div class="kpi-card red">
+    <div class="kpi-label">Deuda financiera total</div>
+    <div class="kpi-value">$762M</div>
+    <div class="kpi-change down">54% vence en corto plazo</div>
+  </div>
+  <div class="kpi-card amber">
+    <div class="kpi-label">Margen operacional</div>
+    <div class="kpi-value">7.7%</div>
+    <div class="kpi-change down">▼ vs 14.4% en 2023</div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-label">Ciclo de caja</div>
+    <div class="kpi-value">74 días</div>
+    <div class="kpi-change up">▲ vs 188 días en 2023</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Cuota mensual deuda</div>
+    <div class="kpi-value">$32.7M</div>
+    <div class="kpi-change">Distribuida en 6 bancos</div>
+  </div>
+</div>
+
+<!-- Rentabilidad -->
+<div id="rentabilidad"></div>
+<h2 class="section-title">Rentabilidad</h2>
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Ventas y resultado operacional ($MM CLP)</h3>
+    <div class="chart-wrap"><canvas id="c1"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Evolución de márgenes (%)</h3>
+    <div class="chart-wrap"><canvas id="c2"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>ROE y ROA (%)</h3>
+    <div class="chart-wrap"><canvas id="c3"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Composición del gasto sobre ventas</h3>
+    <div class="chart-wrap"><canvas id="c4"></canvas></div>
+  </div>
+</div>
+
+<!-- EERR -->
+<div id="eerr"></div>
+<h2 class="section-title">Estado de resultados comparativo</h2>
+<div class="chart-card full-width" style="overflow-x:auto;">
+<table>
+  <thead>
+    <tr><th>Concepto</th><th style="text-align:right">2023</th><th style="text-align:right">2024</th><th style="text-align:right">2025</th><th style="text-align:right">Var% 23→24</th><th style="text-align:right">Var% 24→25</th></tr>
+  </thead>
+  <tbody>
+    <tr class="eerr-highlight"><td>Ventas netas (incl. Rebate)</td><td style="text-align:right">$2.402.034</td><td style="text-align:right">$2.617.731</td><td style="text-align:right">$2.855.986</td><td style="text-align:right">+9.0%</td><td style="text-align:right">+9.1%</td></tr>
+    <tr><td>Costo de ventas</td><td style="text-align:right">($1.333.470)</td><td style="text-align:right">($1.593.060)</td><td style="text-align:right">($1.581.216)</td><td style="text-align:right">+19.5%</td><td style="text-align:right">-0.7%</td></tr>
+    <tr class="eerr-highlight"><td>Margen bruto</td><td style="text-align:right">$1.068.564</td><td style="text-align:right">$1.024.672</td><td style="text-align:right">$1.274.770</td><td style="text-align:right">-4.1%</td><td style="text-align:right">+24.4%</td></tr>
+    <tr><td>Gastos adm. y ventas (GAV)</td><td style="text-align:right">($723.466)</td><td style="text-align:right">($854.388)</td><td style="text-align:right">($1.054.059)</td><td style="text-align:right">+18.1%</td><td style="text-align:right">+23.4%</td></tr>
+    <tr class="eerr-highlight"><td>Resultado operacional</td><td style="text-align:right">$345.098</td><td style="text-align:right">$170.283</td><td style="text-align:right">$220.711</td><td style="text-align:right">-50.7%</td><td style="text-align:right">+29.6%</td></tr>
+    <tr><td>Egresos no operacionales</td><td style="text-align:right">($99.277)</td><td style="text-align:right">($110.745)</td><td style="text-align:right">($112.890)</td><td style="text-align:right">+11.6%</td><td style="text-align:right">+1.9%</td></tr>
+    <tr><td>Impuesto a la renta</td><td style="text-align:right">($15.033)</td><td style="text-align:right">($5.608)</td><td style="text-align:right">($8.953)</td><td style="text-align:right">-62.7%</td><td style="text-align:right">+59.6%</td></tr>
+    <tr class="eerr-highlight"><td><strong>Resultado del ejercicio</strong></td><td style="text-align:right"><strong>$229.131</strong></td><td style="text-align:right"><strong>$56.187</strong></td><td style="text-align:right"><strong>$105.759</strong></td><td style="text-align:right;color:#e24b4a"><strong>-75.5%</strong></td><td style="text-align:right;color:#1d9e75"><strong>+88.2%</strong></td></tr>
+  </tbody>
+</table>
+<p style="font-size:0.8rem; color:var(--muted); margin-top:8px;">Cifras en miles de CLP</p>
+</div>
+
+<!-- Endeudamiento -->
+<div id="endeudamiento"></div>
+<h2 class="section-title">Endeudamiento</h2>
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Leverage y deuda financiera/patrimonio</h3>
+    <div class="chart-wrap"><canvas id="c5"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Cobertura de intereses (EBIT / Intereses)</h3>
+    <div class="chart-wrap"><canvas id="c6"></canvas></div>
+  </div>
+</div>
+
+<div class="chart-card" style="margin-bottom:1.5rem;">
+<table class="ratio-table">
+  <thead><tr><th>Ratio de endeudamiento</th><th style="text-align:right">2023</th><th style="text-align:right">2024</th><th style="text-align:right">2025</th><th style="text-align:right">Tendencia</th></tr></thead>
+  <tbody>
+    <tr><td>Leverage (Pasivo/Patrimonio)</td><td style="text-align:right">2.46x</td><td style="text-align:right">2.24x</td><td style="text-align:right">2.12x</td><td style="text-align:right" class="trend-up">↓ Desapalancamiento</td></tr>
+    <tr><td>Deuda/Activos totales</td><td style="text-align:right">71.1%</td><td style="text-align:right">69.1%</td><td style="text-align:right">68.0%</td><td style="text-align:right" class="trend-up">↓ Mejora</td></tr>
+    <tr><td>Deuda financiera/Patrimonio</td><td style="text-align:right">1.35x</td><td style="text-align:right">1.26x</td><td style="text-align:right">0.97x</td><td style="text-align:right" class="trend-up">↓ Bajo 1.0x</td></tr>
+    <tr><td>Cobertura de intereses</td><td style="text-align:right">4.79x</td><td style="text-align:right">1.72x</td><td style="text-align:right">2.26x</td><td style="text-align:right" class="trend-up">↑ Recupera</td></tr>
+    <tr><td>Deuda CP / Deuda financiera total</td><td style="text-align:right">34.0%</td><td style="text-align:right">37.9%</td><td style="text-align:right">54.3%</td><td style="text-align:right" class="trend-down">⚠ Riesgo concentración</td></tr>
+    <tr><td>Costo financiero / Ventas</td><td style="text-align:right">4.1%</td><td style="text-align:right">4.2%</td><td style="text-align:right">4.0%</td><td style="text-align:right">→ Estable</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- Liquidez -->
+<div id="liquidez"></div>
+<h2 class="section-title">Liquidez</h2>
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Razón corriente y prueba ácida</h3>
+    <div class="chart-wrap"><canvas id="c7"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Capital de trabajo ($MM CLP)</h3>
+    <div class="chart-wrap"><canvas id="c8"></canvas></div>
+  </div>
+</div>
+
+<!-- Eficiencia -->
+<div id="eficiencia"></div>
+<h2 class="section-title">Eficiencia operativa</h2>
+<div class="chart-grid">
+  <div class="chart-card full-width">
+    <h3>Ciclo de conversión de caja (días)</h3>
+    <div class="chart-wrap"><canvas id="c9"></canvas></div>
+  </div>
+</div>
+<div class="chart-card" style="margin-bottom:1.5rem;">
+<table class="ratio-table">
+  <thead><tr><th>Indicador</th><th style="text-align:right">2023</th><th style="text-align:right">2024</th><th style="text-align:right">2025</th><th style="text-align:right">Tendencia</th></tr></thead>
+  <tbody>
+    <tr><td>Días de cobro (DSO)</td><td style="text-align:right">174</td><td style="text-align:right">92</td><td style="text-align:right">110</td><td style="text-align:right" class="trend-down">↑ Repunta</td></tr>
+    <tr><td>Días de inventario (DIO)</td><td style="text-align:right">164</td><td style="text-align:right">137</td><td style="text-align:right">127</td><td style="text-align:right" class="trend-up">↓ Mejora</td></tr>
+    <tr><td>Días de pago (DPO)</td><td style="text-align:right">150</td><td style="text-align:right">116</td><td style="text-align:right">164</td><td style="text-align:right" class="trend-up">↑ Buen apalancamiento op.</td></tr>
+    <tr><td>Ciclo conversión caja</td><td style="text-align:right">188</td><td style="text-align:right">114</td><td style="text-align:right">74</td><td style="text-align:right" class="trend-up">↓ Excelente mejora</td></tr>
+    <tr><td>Remuneraciones / Ventas</td><td style="text-align:right">22.2%</td><td style="text-align:right">26.0%</td><td style="text-align:right">29.3%</td><td style="text-align:right" class="trend-down">⚠ Creciente</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- Estructura de Deuda -->
+<div id="deuda"></div>
+<h2 class="section-title">Estructura de deuda financiera (al 17/04/2026)</h2>
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Distribución por banco</h3>
+    <div class="chart-wrap"><canvas id="c10"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Detalle de créditos vigentes</h3>
+    <table style="font-size:0.82rem;">
+      <thead><tr><th>Banco</th><th style="text-align:right">Saldo capital</th><th style="text-align:right">Cuota/mes</th><th style="text-align:right">%</th></tr></thead>
+      <tbody>
+        <tr><td>Banco Santander</td><td style="text-align:right">$93.557</td><td style="text-align:right">$4.690</td><td style="text-align:right">13.9%</td></tr>
+        <tr><td>Banco de Chile</td><td style="text-align:right">$88.216</td><td style="text-align:right">$4.489</td><td style="text-align:right">13.1%</td></tr>
+        <tr><td>Banco BCI</td><td style="text-align:right">$142.079</td><td style="text-align:right">$8.245</td><td style="text-align:right">21.2%</td></tr>
+        <tr><td>Banco ITAÚ</td><td style="text-align:right">$138.687</td><td style="text-align:right">$5.656</td><td style="text-align:right">20.7%</td></tr>
+        <tr><td>Banco Estado</td><td style="text-align:right">$98.637</td><td style="text-align:right">$5.248</td><td style="text-align:right">14.7%</td></tr>
+        <tr><td>Banco Internacional</td><td style="text-align:right">$109.743</td><td style="text-align:right">$4.391</td><td style="text-align:right">16.4%</td></tr>
+        <tr style="font-weight:700; border-top:2px solid var(--accent);"><td>TOTAL</td><td style="text-align:right">$670.918</td><td style="text-align:right">$32.717</td><td style="text-align:right">100%</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:0.75rem; color:var(--muted); margin-top:8px;">Cifras en miles de CLP. Total con intereses: $763.066M</p>
+  </div>
+</div>
+
+<!-- Alertas -->
+<div id="alertas"></div>
+<h2 class="section-title">Alertas y recomendaciones CFO</h2>
+<div class="chart-card full-width">
+<table>
+  <thead><tr><th style="width:20%">Área</th><th style="width:35%">Hallazgo</th><th style="width:10%">Severidad</th><th style="width:35%">Recomendación</th></tr></thead>
+  <tbody>
+    <tr><td>Concentración deuda CP</td><td>54% de la deuda financiera vence en corto plazo (vs 34% en 2023). Cuota mensual de $32.7M</td><td><span class="badge badge-alta">ALTA</span></td><td>Refinanciar tramos CP a LP para aliviar presión de flujo mensual. Evaluar crédito sindicado.</td></tr>
+    <tr><td>GAV / Remuneraciones</td><td>Remuneraciones crecieron de 22% a 29% de ventas (+$302M en 3 años). GAV creció 46% vs ventas +19%</td><td><span class="badge badge-alta">ALTA</span></td><td>Medir productividad por empleado. Ajustar mix compensación fija/variable. Benchmarking sectorial.</td></tr>
+    <tr><td>Margen operacional</td><td>Cayó de 14.4% (2023) a 7.7% (2025) pese a recuperación del margen bruto a 44.6%</td><td><span class="badge badge-alta">ALTA</span></td><td>El problema no es pricing/costo sino estructura de GAV. Revisar cada línea de gasto vs benchmark.</td></tr>
+    <tr><td>Liquidez</td><td>Razón corriente deteriorándose: 1.96x → 1.62x. Capital trabajo -$159M en un año</td><td><span class="badge badge-media">MEDIA</span></td><td>Monitorear mensualmente. Negociar plazos con proveedores clave. Acelerar cobranza.</td></tr>
+    <tr><td>Cobertura intereses</td><td>2.26x es aceptable pero frágil. En 2024 llegó a 1.72x (zona de riesgo)</td><td><span class="badge badge-media">MEDIA</span></td><td>No tomar nueva deuda sin plan de mejora de EBITDA. Mantener sobre 2.0x mínimo.</td></tr>
+    <tr><td>DSO</td><td>110 días de cobro promedio - alto para sector TI/servicios recurrentes</td><td><span class="badge badge-media">MEDIA</span></td><td>Política de cobranza más estricta. Descuentos pronto pago. Evaluar factoring selectivo.</td></tr>
+    <tr><td>Ciclo de caja</td><td>Mejora excepcional: 188 → 74 días. DPO subió a 164 días.</td><td><span class="badge badge-positivo">POSITIVO</span></td><td>Consolidar. Cuidar que DPO alto no deteriore relación con proveedores estratégicos.</td></tr>
+    <tr><td>Crecimiento ventas</td><td>CAGR 9%, Rebate $83M nuevo en 2025. MRR creció de $1.034M a $1.363M</td><td><span class="badge badge-positivo">POSITIVO</span></td><td>Potenciar MRR como fuente estable. Diversificar hacia servicios de mayor margen.</td></tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+<div class="footer">
+  <p>Análisis generado a partir de balances auditados 2023, 2024 y 2025 + estructura de deuda al 17/04/2026</p>
+  <p>INSOLTEC — Soluciones de Tecnología y Comunicaciones SpA</p>
+</div>
+
+<script>
+const Y = ['2023','2024','2025'];
+const accent = '#2f5496', green = '#1d9e75', red = '#e24b4a', amber = '#ba7517', purple = '#534ab7', coral = '#d85a30';
+
+// C1 - Ventas y Resultado Op
+new Chart(document.getElementById('c1'), {
+  type: 'bar',
+  data: { labels: Y, datasets: [
+    { label: 'Ventas', data: [2402, 2618, 2856], backgroundColor: accent, order: 2 },
+    { label: 'Resultado Op.', data: [345, 170, 221], backgroundColor: green, order: 1 }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, scales: { y: { ticks: { callback: v => '$'+v+'M' } } } }
+});
+
+// C2 - Márgenes
+new Chart(document.getElementById('c2'), {
+  type: 'line',
+  data: { labels: Y, datasets: [
+    { label: 'Margen bruto', data: [44.5, 39.1, 44.6], borderColor: accent, backgroundColor: 'rgba(47,84,150,0.08)', fill: true, tension: 0.3 },
+    { label: 'Margen operacional', data: [14.4, 6.5, 7.7], borderColor: green, tension: 0.3 },
+    { label: 'Margen neto', data: [9.5, 2.1, 3.7], borderColor: coral, tension: 0.3 }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, scales: { y: { min: 0, max: 50, ticks: { callback: v => v+'%' } } } }
+});
+
+// C3 - ROE/ROA
+new Chart(document.getElementById('c3'), {
+  type: 'bar',
+  data: { labels: Y, datasets: [
+    { label: 'ROE', data: [35.0, 8.0, 13.5], backgroundColor: purple },
+    { label: 'ROA', data: [10.1, 2.5, 4.3], backgroundColor: amber }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, scales: { y: { ticks: { callback: v => v+'%' } } } }
+});
+
+// C4 - Composición gasto
+new Chart(document.getElementById('c4'), {
+  type: 'bar',
+  data: { labels: Y, datasets: [
+    { label: 'Costo Ventas', data: [55.5, 60.9, 55.4], backgroundColor: '#adb5bd' },
+    { label: 'Remuneraciones', data: [22.2, 26.0, 29.3], backgroundColor: coral },
+    { label: 'Otros GAV', data: [8.0, 6.6, 7.7], backgroundColor: amber },
+    { label: 'Costo Financiero', data: [4.1, 4.2, 4.0], backgroundColor: purple },
+    { label: 'Utilidad Neta', data: [9.5, 2.1, 3.7], backgroundColor: green }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }, scales: { x: { stacked: true, max: 100, ticks: { callback: v => v+'%' } }, y: { stacked: true } } }
+});
+
+// C5 - Leverage
+new Chart(document.getElementById('c5'), {
+  type: 'line',
+  data: { labels: Y, datasets: [
+    { label: 'Leverage (P/Pat)', data: [2.46, 2.24, 2.12], borderColor: accent, borderWidth: 3, tension: 0.3, pointRadius: 5 },
+    { label: 'Deuda Fin/Pat', data: [1.35, 1.26, 0.97], borderColor: coral, borderWidth: 3, tension: 0.3, pointRadius: 5 }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, scales: { y: { min: 0, max: 3, ticks: { callback: v => v.toFixed(1)+'x' } } } }
+});
+
+// C6 - Cobertura
+new Chart(document.getElementById('c6'), {
+  type: 'bar',
+  data: { labels: Y, datasets: [
+    { label: 'Cobertura intereses', data: [4.79, 1.72, 2.26], backgroundColor: [green, red, amber] }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, annotation: {} }, scales: { y: { min: 0, max: 6, ticks: { callback: v => v.toFixed(1)+'x' } } } }
+});
+
+// C7 - Liquidez
+new Chart(document.getElementById('c7'), {
+  type: 'line',
+  data: { labels: Y, datasets: [
+    { label: 'Razón corriente', data: [1.92, 1.96, 1.62], borderColor: accent, borderWidth: 3, tension: 0.3, pointRadius: 5 },
+    { label: 'Prueba ácida', data: [1.33, 1.37, 1.20], borderColor: coral, borderWidth: 3, tension: 0.3, pointRadius: 5 }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, scales: { y: { min: 0.5, max: 2.5, ticks: { callback: v => v.toFixed(1)+'x' } } } }
+});
+
+// C8 - Capital trabajo
+new Chart(document.getElementById('c8'), {
+  type: 'bar',
+  data: { labels: Y, datasets: [
+    { label: 'Capital de trabajo', data: [941, 971, 812], backgroundColor: [green, green, amber] }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => '$'+v+'M' } } } }
+});
+
+// C9 - Ciclo caja
+new Chart(document.getElementById('c9'), {
+  type: 'bar',
+  data: { labels: Y, datasets: [
+    { label: 'DSO (cobro)', data: [174, 92, 110], backgroundColor: accent },
+    { label: 'DIO (inventario)', data: [164, 137, 127], backgroundColor: amber },
+    { label: 'DPO (pago)', data: [-150, -116, -164], backgroundColor: green },
+    { label: 'Ciclo neto', data: [188, 114, 74], type: 'line', borderColor: red, backgroundColor: 'transparent', borderWidth: 3, pointRadius: 6, pointBackgroundColor: red }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => v+' días' } } } }
+});
+
+// C10 - Donut deuda
+new Chart(document.getElementById('c10'), {
+  type: 'doughnut',
+  data: { labels: ['BCI $142M','ITAÚ $139M','Internacional $110M','Estado $99M','Santander $94M','Chile $88M'],
+    datasets: [{ data: [142,139,110,99,94,88], backgroundColor: [accent,purple,green,amber,coral,'#993556'] }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } } } }
+});
+</script>
+</body>
+</html>
